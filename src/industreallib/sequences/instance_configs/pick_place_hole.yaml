@@ -1,0 +1,30 @@
+sequence:
+  # NOTE: The task instances are executed in interleaved fashion
+  # on the specified parts. In other words, for the following
+  # parameters, the execution order would be as follows:
+  # 1) pick_pegs on round_peg
+  # 2) place_pegs on round_hole
+  # 3) insert_pegs on round_hole
+  # 4) place_pegs on rect peg
+  # 5) place_pegs on rect_hole
+  # 6) insert_pegs on rect_hole
+  task_instance_config_names: [pick_hole, reach_location, place_hole, rotate, retreat]
+  task_instance_config_subdir: null
+  pick_hole:
+    do_before: ['reset_pos', 'open_gripper']
+    do_after: ['go_downward', 'close_gripper', 'go_upward']
+  reach_location:
+    do_before: []
+    do_after: []
+  place_hole:
+    do_before: []
+    do_after: ['open_gripper']
+  rotate:
+    do_before: []
+    do_after: []
+  retreat:
+    do_before: []
+    do_after: ['reset_pos']
+
+goals:
+  source: random  # options: random, perception, guide

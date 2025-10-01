@@ -55,10 +55,13 @@ if __name__ == "__main__":
         args=args, sequence_instance_config=sequence_instance_config
     )
 
-    # Get number of assemblies to assemble
-    num_assemblies = sequence_utils.get_num_assemblies(
-        sequence_instance_config=sequence_instance_config
-    )
+    if sequence_instance_config.goals.source == "perception":
+        # Get number of assemblies to assemble
+        num_assemblies = sequence_utils.get_num_assemblies(
+            sequence_instance_config=sequence_instance_config
+        )
+    else:
+        num_assemblies = 1
 
     # For each assembly (e.g., round-peg-and-round-hole), execute each task instance
     # in sequence instance (e.g., pick pegs, place pegs, insert pegs), and repeat
@@ -71,42 +74,61 @@ if __name__ == "__main__":
                 sequence_instance_config.sequence.task_instance_config_names[task_num]
             )
 
-            # Get name of part (e.g., round_peg) assigned to current task instance
-            part_name = sequence_instance_config.sequence[
-                f"{task_instance_config_name}"
-            ].part_order[i]
-
-            print(f"\nRunning {task_instance_config_name} task on {part_name} part...")
-
-            # Get goal coordinates for current part
-            # NOTE: If there is more than one detection label that has the desired part
-            # name (e.g., round_peg), the goal coordinates will be retrieved for the
-            # *first* detection label with that part name, unless those goal coordinates
-            # have already been visited. To prevent unexpected behavior, it is
-            # recommended to have a unique detection label for each part, or to restrict
-            # the scene to unique parts.
-            for label, goal in zip(task_instance.goal_labels, task_instance.goal_coords):
-                if label == part_name and goal not in visited_goals:
-                    visited_goals.append(goal)
-                    break
-            else:
-                raise ValueError(f"Desired part {part_name} not found.")
-
-            # Do pre-task procedure, go to goal coordinates, and do post-task procedure
-            task_instance.do_simple_procedure(
-                procedure=sequence_instance_config.sequence[
+            if sequence_instance_config.goals.source == "random":
+                print(f"\nRunning {task_instance_config_name}...")
+                task_instance.do_simple_procedure(
+                    procedure=sequence_instance_config.sequence[
+                        f"{task_instance_config_name}"
+                    ].do_before,
+                    franka_arm=sequence_instance.franka_arm,
+                )
+                print(f"{task_num + 1}/{len(sequence_instance.task_instances)}: Going to goal...")
+                for goal in task_instance.goal_coords:
+                    # Do pre-task procedure, go to goal coordinates, and do post-task procedure
+                    task_instance.go_to_goal(goal=goal, franka_arm=sequence_instance.franka_arm)
+                task_instance.do_simple_procedure(
+                    procedure=sequence_instance_config.sequence[
+                        f"{task_instance_config_name}"
+                    ].do_after,
+                    franka_arm=sequence_instance.franka_arm,
+                )
+                print(f"\nFinished running {task_instance_config_name}.")            
+            elif sequence_instance_config.goals.source == "perception":
+                # Get name of part (e.g., round_peg) assigned to current task instance
+                part_name = sequence_instance_config.sequence[
                     f"{task_instance_config_name}"
-                ].do_before,
-                franka_arm=sequence_instance.franka_arm,
-            )
-            task_instance.go_to_goal(goal=goal, franka_arm=sequence_instance.franka_arm)
-            task_instance.do_simple_procedure(
-                procedure=sequence_instance_config.sequence[
-                    f"{task_instance_config_name}"
-                ].do_after,
-                franka_arm=sequence_instance.franka_arm,
-            )
+                ].part_order[i]
 
-            print(f"\nFinished running {task_instance_config_name} task on {part_name} part.")
+                print(f"\nRunning {task_instance_config_name} task on {part_name} part...")
+
+                # Get goal coordinates for current part
+                # NOTE: If there is more than one detection label that has the desired part
+                # name (e.g., round_peg), the goal coordinates will be retrieved for the
+                # *first* detection label with that part name, unless those goal coordinates
+                # have already been visited. To prevent unexpected behavior, it is
+                # recommended to have a unique detection label for each part, or to restrict
+                # the scene to unique parts.
+                for label, goal in zip(task_instance.goal_labels, task_instance.goal_coords):
+                    if label == part_name and goal not in visited_goals:
+                        visited_goals.append(goal)
+                        break
+                else:
+                    raise ValueError(f"Desired part {part_name} not found.")
+
+                # Do pre-task procedure, go to goal coordinates, and do post-task procedure
+                task_instance.do_simple_procedure(
+                    procedure=sequence_instance_config.sequence[
+                        f"{task_instance_config_name}"
+                    ].do_before,
+                    franka_arm=sequence_instance.franka_arm,
+                )
+                task_instance.go_to_goal(goal=goal, franka_arm=sequence_instance.franka_arm)
+                task_instance.do_simple_procedure(
+                    procedure=sequence_instance_config.sequence[
+                        f"{task_instance_config_name}"
+                    ].do_after,
+                    franka_arm=sequence_instance.franka_arm,
+                )
+                print(f"\nFinished running {task_instance_config_name} task on {part_name} part.")
 
         print(f"\nFinished running {args.sequence_instance_config_name} sequence.")

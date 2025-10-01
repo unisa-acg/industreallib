@@ -33,7 +33,7 @@ def get_args():
         type=str,
         required=True,
         help=(
-            "Options: get_pose, get_angles, open_gripper, close_gripper, go_home, go_to_pos,"
+            "Options: get_pose, get_angles, open_gripper, close_gripper, go_home, reset_pos, go_to_pos,"
             " go_upward, go_downward, perturb yaw, guide"
         ),
     )
@@ -63,9 +63,11 @@ if __name__ == "__main__":
     elif args.action == "open_gripper":
         control_utils.open_gripper(franka_arm=franka_arm)
     elif args.action == "close_gripper":
-        control_utils.close_gripper(franka_arm=franka_arm)
+        control_utils.close_gripper(franka_arm=franka_arm, force=20)
     elif args.action == "go_home":
         control_utils.go_home(franka_arm=franka_arm, duration=5.0)
+    elif args.action == "reset_pos":
+        control_utils.reset_pos(franka_arm=franka_arm, duration=5.0)
     elif args.action == "go_to_pos":
         control_utils.go_to_pos(franka_arm=franka_arm, pos=args.position, duration=5.0)
     elif args.action == "go_upward":

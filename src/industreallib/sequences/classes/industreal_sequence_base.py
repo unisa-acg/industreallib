@@ -29,7 +29,8 @@ class IndustRealSequenceBase:
         self._get_task_instances()
         self.franka_arm = FrankaArm()
         control_utils.set_sigint_response(franka_arm=self.franka_arm)
-        self._get_goals_from_perception()
+        if self._sequence_instance_config.goals.source == "perception":
+            self._get_goals_from_perception()
 
     def _get_task_instances(self):
         """Gets the task instances for the sequence."""
@@ -50,6 +51,8 @@ class IndustRealSequenceBase:
             task_instance = task_utils.get_task_instance(
                 args=self._args, task_instance_config=task_instance_config, in_sequence=True
             )
+            if self._sequence_instance_config.goals.source == "random":
+                task_instance._get_goals_randomly()
             self.task_instances.append(task_instance)
 
     def _get_goals_from_perception(self):

@@ -339,7 +339,7 @@ class IndustRealTaskBase:
             translation=goal_pos, rotation=goal_ori_mat, from_frame="franka_tool", to_frame="world"
         )
 
-        print(f"\nGoing to goal pose with {self.task_instance_config.motion.source}...")
+        print(f"\nGoing to goal pose {transform} with {self.task_instance_config.motion.source}...")
         if "frankapy" in self.task_instance_config.motion.source:
             franka_arm.goto_pose(
                 tool_pose=transform,
@@ -522,12 +522,14 @@ class IndustRealTaskBase:
                 if step == "open_gripper":
                     control_utils.open_gripper(franka_arm=franka_arm)
                 elif step == "close_gripper":
-                    control_utils.close_gripper(franka_arm=franka_arm)
+                    control_utils.close_gripper(franka_arm=franka_arm, force=20)
                 elif step == "go_upward":
                     control_utils.go_upward(franka_arm=franka_arm, dist=0.2, duration=2.0)
                 elif step == "go_downward":
                     control_utils.go_downward(franka_arm=franka_arm, dist=0.2, duration=2.0)
                 elif step == "go_home":
                     control_utils.go_home(franka_arm=franka_arm, duration=5.0)
+                elif step == "reset_pos":
+                    control_utils.reset_pos(franka_arm=franka_arm, duration=5.0)
                 else:
                     raise ValueError(f"Invalid step {step} in motion procedure.")

@@ -16,6 +16,7 @@ import numpy as np
 import rospy
 from autolab_core import RigidTransform
 from frankapy import SensorDataMessageType
+from frankapy.franka_constants import FrankaConstants as FC
 from frankapy.proto import CartesianImpedanceSensorMessage, PosePositionSensorMessage
 from frankapy.proto_utils import make_sensor_group_msg, sensor_proto2ros_msg
 from scipy.spatial.transform import Rotation
@@ -28,10 +29,10 @@ def open_gripper(franka_arm):
     print("Opened gripper.")
 
 
-def close_gripper(franka_arm):
+def close_gripper(franka_arm, force=FC.GRIPPER_MAX_FORCE):
     """Closes the gripper."""
     print("\nClosing gripper...")
-    franka_arm.close_gripper()
+    franka_arm.close_gripper(force=force)
     print("Closed gripper.")
 
 
@@ -110,6 +111,15 @@ def go_home(franka_arm, duration):
     )
     print("Reached home configuration.")
 
+def reset_pos(franka_arm, duration):
+    """Goes to reset configuration."""
+    print("\nGoing to reset configuration...")
+    go_to_joint_angles(
+        franka_arm=franka_arm,
+        joint_angles=[0.0, -np.pi / 4, 0.0, -3 * np.pi / 4, 0.0, np.pi / 2, np.pi / 4],
+        duration=duration,
+    )
+    print("Reached reset configuration.")
 
 def go_upward(franka_arm, dist, duration):
     """Goes upward by a specified distance while maintaining gripper orientation."""
