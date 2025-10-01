@@ -41,9 +41,9 @@ The following hardware is required to use the repo. The models and versions used
 
 #### Prerequisites:
 
-- Set up [franka-interface](https://github.com/iamlab-cmu/franka-interface) on the workstation running the real-time kernel (refer to the [installation doc](https://github.com/iamlab-cmu/franka-interface/blob/master/docs/install.rst))
-- Set up [frankapy](https://github.com/iamlab-cmu/frankapy) on the workstation running the generic kernel (refer to the [installation doc](https://github.com/iamlab-cmu/frankapy/blob/master/docs/install.rst))
-- Make sure that the generic workstation can successfully control the Franka robot by running one of the [frankapy examples](https://github.com/iamlab-cmu/frankapy/tree/master/examples)
+- Set up [franka-interface](https://github.com/unisa-acg/franka-interface) on the workstation running the real-time kernel (refer to the [installation doc](https://github.com/unisa-acg/franka-interface/blob/master/docs/install.rst))
+- Set up [frankapy](https://github.com/unisa-acg/frankapy) on the workstation running the generic kernel (refer to the [installation doc](https://github.com/unisa-acg/frankapy/blob/master/docs/install.rst))
+- Make sure that the generic workstation can successfully control the Franka robot by running one of the [frankapy examples](https://github.com/unisa-acg/frankapy/tree/master/examples)
     - If any issues are encountered, please refer to frankapy's [Discord community](https://discord.gg/r6r7dttMwZ)
 - Set up [Isaac Gym Preview Release 4](https://developer.nvidia.com/isaac-gym) on the generic workstation
 - Clone and install [Isaac Gym Envs](https://github.com/NVIDIA-Omniverse/IsaacGymEnvs) on the generic workstation in the same virtual environment or Conda environment used for frankapy
